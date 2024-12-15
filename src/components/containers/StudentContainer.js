@@ -1,3 +1,4 @@
+
 /*==================================================
 StudentContainer.js
 
@@ -8,7 +9,7 @@ If needed, it also defines the component's "connect" function.
 import Header from './Header';
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { fetchStudentThunk } from "../../store/thunks";
+import { fetchStudentThunk, fetchCampusThunk } from "../../store/thunks";
 import { StudentView } from "../views";
 
 class StudentContainer extends Component {
@@ -16,6 +17,14 @@ class StudentContainer extends Component {
   componentDidMount() {
     //getting student ID from url
     this.props.fetchStudent(this.props.match.params.id);
+    
+  }
+
+  componentDidUpdate(prevProps) {
+    const { student } = this.props;
+    if (student && student.campusId && student.campusId !== prevProps.student.campusId) {
+      this.props.fetchCampus(student.campusId); // Fetch the campus when campusId changes
+    }
   }
 
   // Render Student view by passing student data as props to the corresponding View component
@@ -23,7 +32,7 @@ class StudentContainer extends Component {
     return (
       <div>
         <Header />
-        <StudentView student={this.props.student} />
+        <StudentView student={this.props.student} campus={this.props.campus} />
       </div>
     );
   }
@@ -34,6 +43,7 @@ class StudentContainer extends Component {
 const mapState = (state) => {
   return {
     student: state.student,  // Get the State object from Reducer "student"
+    campus: state.campus,
   };
 };
 // 2. The "mapDispatch" argument is used to dispatch Action (Redux Thunk) to Redux Store.
@@ -41,6 +51,7 @@ const mapState = (state) => {
 const mapDispatch = (dispatch) => {
   return {
     fetchStudent: (id) => dispatch(fetchStudentThunk(id)),
+    fetchCampus: (id) => dispatch(fetchCampusThunk(id)),
   };
 };
 

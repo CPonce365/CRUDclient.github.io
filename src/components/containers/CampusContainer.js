@@ -8,7 +8,7 @@ If needed, it also defines the component's "connect" function.
 import Header from './Header';
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { fetchCampusThunk } from "../../store/thunks";
+import { fetchCampusThunk, deleteCampusThunk, deleteStudentThunk } from "../../store/thunks";
 
 import { CampusView } from "../views";
 
@@ -19,12 +19,27 @@ class CampusContainer extends Component {
     this.props.fetchCampus(this.props.match.params.id);
   }
 
+  handleDeleteCampus = async (campusId) => {
+    await this.props.deleteCampus(campusId); // Dispatch the delete action
+    this.props.history.push(`/campuses`); // Redirect to the All Campuses page
+  };
+
+  handleDeleteStudent = async (studentId) => {
+    await this.props.deleteStudent(studentId); // Dispatch the delete action
+    // Refresh the campus data to reflect the change
+    this.props.fetchCampus(this.props.match.params.id);
+  };
   // Render a Campus view by passing campus data as props to the corresponding View component
   render() {
     return (
       <div>
         <Header />
-        <CampusView campus={this.props.campus} />
+        <CampusView 
+        campus={this.props.campus} 
+        deleteCampus = {this.handleDeleteCampus}
+        deleteStudent = {this.handleDeleteStudent}
+        />
+        
       </div>
     );
   }
@@ -43,6 +58,8 @@ const mapState = (state) => {
 const mapDispatch = (dispatch) => {
   return {
     fetchCampus: (id) => dispatch(fetchCampusThunk(id)),
+    deleteCampus: (id) => dispatch(deleteCampusThunk(id)),
+    deleteStudent: (id) => dispatch(deleteStudentThunk(id)),
   };
 };
 

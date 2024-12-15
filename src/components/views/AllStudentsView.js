@@ -1,3 +1,4 @@
+
 /*==================================================
 AllStudentsView.js
 
@@ -6,13 +7,14 @@ It constructs a React component to display the all students view page.
 ================================================== */
 import { Link } from "react-router-dom";
 
+
 const AllStudentsView = (props) => {
   const {students, deleteStudent} = props;
   // If there is no student, display a message
-  if (!students.length) {
+  if (!props.students.length) {
     return (
     <div>
-      <p>There are no students.</p>
+      <p>There are no students. Click on the "Add New Student" button to add a new Student</p>
       <Link to={`newstudent`}>
         <button>Add New Student</button>
       </Link>
@@ -29,6 +31,7 @@ const AllStudentsView = (props) => {
           let name = student.firstname + " " + student.lastname;
           return (
             <div key={student.id}>
+              <img src={`/StudentPFP.jpg?cacheBuster=${new Date().getTime()}`} alt="PFP" style={{width: '300px', height: '250px', paddingTop: '2%' }} />
               <Link to={`/student/${student.id}`}>
                 <h2>{name}</h2>
               </Link>

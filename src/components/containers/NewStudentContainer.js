@@ -1,3 +1,4 @@
+
 /*==================================================
 NewStudentContainer.js
 
@@ -20,9 +21,13 @@ class NewStudentContainer extends Component {
     this.state = {
       firstname: "", 
       lastname: "", 
+      email: "",
+      imageUrl: "",
+      //gpa: null,
       campusId: null, 
       redirect: false, 
-      redirectId: null
+      redirectId: null,
+      errors: {},
     };
   }
 
@@ -33,14 +38,55 @@ class NewStudentContainer extends Component {
     });
   }
 
+  validateInputs = () => {
+    let errors = {};
+    let Valid = true;
+
+    if (!this.state.firstname) {
+      Valid = false;
+      errors.firstname = "First name is required!";
+    }
+
+    if (!this.state.lastname) {
+      Valid = false;
+      errors.lastname = "Last name is required!";
+    }
+
+    if (!this.state.email || !/\S+@\S+\.\S+/.test(this.state.email)) {
+      Valid = false;
+      errors.email = "Valid email is required! Example:example@email.com";
+    }
+
+    if (!this.state.gpa || isNaN(this.state.gpa) || this.state.gpa < 0 || this.state.gpa > 4) {
+      Valid = false;
+      errors.gpa = "GPA must be a number between 0 and 4!";
+    }
+
+    if (!this.state.campusId || isNaN(this.state.campusId)) {
+      Valid = false;
+      errors.campusId = "Campus ID must be a valid number from a Campus!";
+    }
+
+    this.setState({ errors });
+    return Valid;
+  }
+
   // Take action after user click the submit button
   handleSubmit = async event => {
     event.preventDefault();  // Prevent browser reload/refresh after submit.
-
+    
+    if (!this.validateInputs()) {
+      return;
+    }
+    
     let student = {
         firstname: this.state.firstname,
         lastname: this.state.lastname,
-        campusId: this.state.campusId
+        email: this.state.email,
+        imageUrl: this.state.imageUrl,
+        description: this.state.description,
+        campusId: this.state.campusId,
+       // gpa: this.state.gpa,
     };
     
     // Add new student in back-end database
@@ -50,6 +96,10 @@ class NewStudentContainer extends Component {
     this.setState({
       firstname: "", 
       lastname: "", 
+      email: "",
+      imageUrl: "",
+      description: "",
+      //gpa: null,
       campusId: null, 
       redirect: true, 
       redirectId: newStudent.id
@@ -74,7 +124,8 @@ class NewStudentContainer extends Component {
         <Header />
         <NewStudentView 
           handleChange = {this.handleChange} 
-          handleSubmit={this.handleSubmit}      
+          handleSubmit={this.handleSubmit}   
+          errors={this.state.errors} 
         />
       </div>          
     );
